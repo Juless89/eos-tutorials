@@ -3,6 +3,7 @@ import time
 import sys
 
 
+# Extract and process the status_code.
 def verify_request(request):
     if request.status_code == 200:
         return True
@@ -13,15 +14,17 @@ def verify_request(request):
 
 # Retrieve block with number block_num
 def get_block(block_num, s=None):
+    # Global parameters used for API requests
     api_endpoint = 'http://mainnet.eoscanada.com'
     api_request = '/v1/chain/get_block'
     url = api_endpoint + api_request
 
-    # API call takes one parameter: block_num_or_id
+    # API call takes one parameter: block_num_or_id for POST
     parameters = '{"block_num_or_id":' + f'{block_num}' + '}'
 
     print(f'Block {block_num}')
 
+    # Keep making new requests until the request is returned succesfully.
     while True:
         if not s:
             request = requests.post(url=url, data=parameters)
@@ -33,7 +36,9 @@ def get_block(block_num, s=None):
                 return request.text
 
 
-def stream_blocks(start_block=1, block_count=20, session=None):
+# Iterate over the specified range based on the start_block and the block_count
+# yield calls to get_block() to create iterable outout.
+def stream_blocks(start_block, block_count, session=None):
     start_time = time.time()
 
     if session:
@@ -48,16 +53,19 @@ def stream_blocks(start_block=1, block_count=20, session=None):
     print(f'\nTook {time.time() - start_time} seconds for completion')
 
 
+# Iniate two streams starting at block 1 for 20 blocks. Use session in one of
+# the streams.
 def perform_test():
     print('\nStarting performance test without session\n')
-    for block in stream_blocks():
+    for block in stream_blocks(1, 20):
         continue
     print('\nStarting performance test with session\n')
-    for block in stream_blocks(session=True):
+    for block in stream_blocks(1, 20, session=True):
         continue
 
 
 if __name__ == '__main__':
+    # Filter command line arguments, print error message when incorrect
     if len(sys.argv) == 3:
         start_block = int(sys.argv[1])
         block_count = int(sys.argv[2])
