@@ -53,7 +53,7 @@ def stream_blocks(start_block, block_count, session=None):
     print(f'\nTook {time.time() - start_time} seconds for completion')
 
 
-# Iniate two streams starting at block 1 for 20 blocks. Use session in one of
+# Initiate two streams starting at block 1 for 20 blocks. Use session in one of
 # the streams.
 def perform_test():
     print('\nStarting performance test without session\n')
