@@ -1,6 +1,7 @@
 import requests
 import time
 import sys
+import json
 
 
 # Extract and process the status_code. Return True only on success.
@@ -9,8 +10,10 @@ def verify_request(request):
     if request.status_code == 200:
         return True
     elif request.status_code == 500:
-        print('Waiting for blockchain to catch up\n')
-        time.sleep(0.5)
+        error_code = json.loads(request.text)['error']['code']
+        if error_code == 3100002:
+            print('Waiting for blockchain to catch up\n')
+            time.sleep(0.5)
 
 
 # Retrieve block with number block_num
