@@ -3,7 +3,8 @@ import time
 import sys
 
 
-# Extract and process the status_code.
+# Extract and process the status_code. Return True only on success.
+# Allow for dealing with issues depening on status_code
 def verify_request(request):
     if request.status_code == 200:
         return True
@@ -39,8 +40,6 @@ def get_block(block_num, s=None):
 # Iterate over the specified range based on the start_block and the block_count
 # yield calls to get_block() to create iterable outout.
 def stream_blocks(start_block, block_count, session=None):
-    start_time = time.time()
-
     if session:
         s = requests.Session()
 
@@ -50,18 +49,21 @@ def stream_blocks(start_block, block_count, session=None):
         else:
             yield get_block(block_num, s)
 
-    print(f'\nTook {time.time() - start_time} seconds for completion')
-
 
 # Iniate two streams starting at block 1 for 20 blocks. Use session in one of
-# the streams.
+# the two streams.
 def perform_test():
     print('\nStarting performance test without session\n')
+    start_time = time.time()
     for block in stream_blocks(1, 20):
         continue
+    print(f'\nTook {time.time() - start_time} seconds for completion')
+
+    start_time = time.time()
     print('\nStarting performance test with session\n')
     for block in stream_blocks(1, 20, session=True):
         continue
+    print(f'\nTook {time.time() - start_time} seconds for completion')
 
 
 if __name__ == '__main__':
